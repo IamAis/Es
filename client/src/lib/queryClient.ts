@@ -2,8 +2,30 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    const raw = await res.text();
+    let message = raw || res.statusText;
+    let data: unknown = raw;
+
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        data = parsed;
+        if (parsed && typeof parsed === "object") {
+          const anyParsed = parsed as any;
+          message = anyParsed.error || anyParsed.message || message;
+        }
+      } catch {
+        // raw text fallback
+      }
+    }
+
+    const err: any = new Error(message);
+    err.status = res.status;
+    err.data = data;
+    if (data && typeof data === "object" && "code" in data) {
+      err.code = (data as any).code;
+    }
+    throw err;
   }
 }
 
@@ -12,10 +34,19 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
+
+  const headers = !data || isFormData ? undefined : { "Content-Type": "application/json" };
+  const body = !data
+    ? undefined
+    : isFormData
+      ? (data as FormData)
+      : JSON.stringify(data);
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
+    headers,
+    body,
     credentials: "include",
   });
 

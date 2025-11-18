@@ -38,7 +38,7 @@ export function DeleteInvoiceDialog({
               Elimina fattura?
             </AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="space-y-3">
+          <div className="space-y-3">
             <div className="bg-muted/50 p-3 rounded-md">
               <p className="font-semibold text-foreground">
                 {invoice.invoiceNumber}
@@ -48,11 +48,11 @@ export function DeleteInvoiceDialog({
                 Data: {invoice.invoiceDate}
               </p>
             </div>
-            <p className="text-amber-600 dark:text-amber-500 font-medium">
+            <AlertDialogDescription className="text-amber-600 dark:text-amber-500 font-medium">
               Verranno eliminati sia il file XML originale che il PDF
               generato. Questa azione non può essere annullata.
-            </p>
-          </AlertDialogDescription>
+            </AlertDialogDescription>
+          </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel data-testid="button-cancel-delete">
@@ -60,7 +60,7 @@ export function DeleteInvoiceDialog({
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            variant="destructive"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             data-testid="button-confirm-delete"
           >
             Elimina

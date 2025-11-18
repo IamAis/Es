@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": ".",
+    "noEmit": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "lib": ["ES2020"],
+    "types": ["node", "electron"],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["./shared/*"]
+    },
+    "incremental": false
+  },
+  "include": ["electron/**/*.ts", "shared/**/*.ts", "server/**/*.ts"],
+  "exclude": ["node_modules", "dist", "client"]
+}

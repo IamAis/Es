@@ -75,7 +75,10 @@ export function PDFViewer({
   };
 
   return (
-    <div className="h-full flex flex-col bg-card border-l" data-testid="pdf-viewer">
+    <div
+      className="h-full flex flex-col bg-card border-l"
+      data-testid="pdf-viewer"
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-card">
         <div className="flex items-center gap-3">
@@ -89,7 +92,9 @@ export function PDFViewer({
           </Button>
           <div>
             <h3 className="font-semibold text-base">{invoice.invoiceNumber}</h3>
-            <p className="text-xs text-muted-foreground">{invoice.supplierName}</p>
+            <p className="text-xs text-muted-foreground">
+              {invoice.supplierName}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -140,13 +145,18 @@ export function PDFViewer({
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="text-sm min-w-[100px] text-center" data-testid="text-page-number">
+                <span
+                  className="text-sm min-w-[100px] text-center"
+                  data-testid="text-page-number"
+                >
                   Pagina {pageNumber} di {numPages}
                 </span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
+                  onClick={() =>
+                    setPageNumber((p) => Math.min(numPages, p + 1))
+                  }
                   disabled={pageNumber >= numPages}
                   data-testid="button-next-page"
                   className="h-8 w-8"
@@ -164,7 +174,10 @@ export function PDFViewer({
                 >
                   <ZoomOut className="w-4 h-4" />
                 </Button>
-                <span className="text-sm min-w-[50px] text-center" data-testid="text-zoom-level">
+                <span
+                  className="text-sm min-w-[50px] text-center"
+                  data-testid="text-zoom-level"
+                >
                   {Math.round(scale * 100)}%
                 </span>
                 <Button
@@ -186,8 +199,16 @@ export function PDFViewer({
                   file={`/api/invoices/${invoice.id}/pdf`}
                   onLoadSuccess={onDocumentLoadSuccess}
                   loading={
-                    <div className="flex items-center justify-center h-96">
+                    <div className="flex flex-col items-center justify-center h-96 gap-4">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Caricamento PDF...
+                        </p>
+                        <p className="text-xs text-muted-foreground/70 mt-1">
+                          Ottimizzato per prestazioni elevate
+                        </p>
+                      </div>
                     </div>
                   }
                 >
@@ -264,7 +285,9 @@ export function PDFViewer({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Numero</p>
-                    <p className="font-semibold font-mono">{invoice.invoiceNumber}</p>
+                    <p className="font-semibold font-mono">
+                      {invoice.invoiceNumber}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Data</p>
@@ -300,7 +323,9 @@ export function PDFViewer({
                   <div className="grid grid-cols-2 gap-3">
                     {invoice.paymentMethod && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Modalità</p>
+                        <p className="text-xs text-muted-foreground">
+                          Modalità
+                        </p>
                         <p className="font-semibold">{invoice.paymentMethod}</p>
                       </div>
                     )}
@@ -314,27 +339,45 @@ export function PDFViewer({
 
               {/* Status */}
               <div>
-                <Label htmlFor="status" className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                <Label
+                  htmlFor="status"
+                  className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+                >
                   Stato
                 </Label>
                 <Select
-                  value={invoice.status}
+                  value={(() => {
+                    // Normalize legacy status values
+                    if (
+                      (invoice.status as any) === "received" ||
+                      (invoice.status as any) === "overdue"
+                    )
+                      return "not_printed";
+                    if ((invoice.status as any) === "paid") return "printed";
+                    return invoice.status;
+                  })()}
                   onValueChange={(value) => onUpdateStatus(invoice.id, value)}
                 >
-                  <SelectTrigger id="status" className="mt-2" data-testid="select-status">
+                  <SelectTrigger
+                    id="status"
+                    className="mt-2"
+                    data-testid="select-status"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="received">Ricevuta</SelectItem>
-                    <SelectItem value="paid">Pagata</SelectItem>
-                    <SelectItem value="overdue">Scaduta</SelectItem>
+                    <SelectItem value="not_printed">Non Stampata</SelectItem>
+                    <SelectItem value="printed">Stampata</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Notes */}
               <div>
-                <Label htmlFor="notes" className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                <Label
+                  htmlFor="notes"
+                  className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+                >
                   Note
                 </Label>
                 <Textarea

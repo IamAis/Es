@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Eye, Download, Printer, Trash2 } from "lucide-react";
+import { MoreVertical, Eye, Download, Printer, Trash2, Star } from "lucide-react";
 import { InvoiceStatusBadge } from "./invoice-status-badge";
 import type { Invoice } from "@shared/schema";
 
@@ -30,6 +30,7 @@ interface InvoiceTableProps {
   onDownloadXML: (invoice: Invoice) => void;
   onDownloadPDF: (invoice: Invoice) => void;
   onPrint: (invoice: Invoice) => void;
+  onToggleMark: (invoice: Invoice) => void;
   onDelete: (invoice: Invoice) => void;
 }
 
@@ -41,6 +42,7 @@ export function InvoiceTable({
   onDownloadXML,
   onDownloadPDF,
   onPrint,
+  onToggleMark,
   onDelete,
 }: InvoiceTableProps) {
   const [sortBy, setSortBy] = useState<keyof Invoice | null>(null);
@@ -92,6 +94,7 @@ export function InvoiceTable({
                 data-testid="checkbox-select-all"
               />
             </TableHead>
+            <TableHead className="w-12"></TableHead>
             <TableHead className="w-32 font-semibold text-xs uppercase tracking-wide">
               Numero
             </TableHead>
@@ -125,6 +128,20 @@ export function InvoiceTable({
                   data-testid={`checkbox-invoice-${invoice.id}`}
                 />
               </TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onToggleMark(invoice)}
+                  data-testid={`button-mark-${invoice.id}`}
+                >
+                  <Star 
+                    className={`w-4 h-4 ${invoice.marked ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`}
+                  />
+                  <span className="sr-only">Contrassegna</span>
+                </Button>
+              </TableCell>
               <TableCell className="font-medium font-mono text-sm" data-testid={`text-invoice-number-${invoice.id}`}>
                 {invoice.invoiceNumber}
               </TableCell>
@@ -147,7 +164,7 @@ export function InvoiceTable({
                 {formatCurrency(invoice.totalAmount)}
               </TableCell>
               <TableCell>
-                <InvoiceStatusBadge status={invoice.status as any} />
+                <InvoiceStatusBadge status={invoice.status} />
               </TableCell>
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>

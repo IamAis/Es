@@ -1,30 +1,47 @@
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Printer, FileText, AlertCircle } from "lucide-react";
 
 interface InvoiceStatusBadgeProps {
-  status: "received" | "paid" | "overdue";
+  status: string;
 }
 
 export function InvoiceStatusBadge({ status }: InvoiceStatusBadgeProps) {
-  const statusConfig = {
-    received: {
-      label: "RICEVUTA",
+  const statusConfig: Record<string, { label: string; className: string; icon: any }> = {
+    not_printed: {
+      label: "NON STAMPATA",
       className: "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-300 border-amber-300 dark:border-amber-700",
-      icon: Clock,
+      icon: FileText,
+    },
+    printed: {
+      label: "STAMPATA",
+      className: "bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300 border-green-300 dark:border-green-700",
+      icon: Printer,
+    },
+    // Legacy status mappings for backward compatibility
+    received: {
+      label: "NON STAMPATA",
+      className: "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-300 border-amber-300 dark:border-amber-700",
+      icon: FileText,
     },
     paid: {
-      label: "PAGATA",
+      label: "STAMPATA",
       className: "bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300 border-green-300 dark:border-green-700",
-      icon: CheckCircle,
+      icon: Printer,
     },
     overdue: {
-      label: "SCADUTA",
-      className: "bg-red-100 text-red-900 dark:bg-red-900/30 dark:text-red-300 border-red-300 dark:border-red-700",
-      icon: AlertCircle,
+      label: "NON STAMPATA",
+      className: "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-300 border-amber-300 dark:border-amber-700",
+      icon: FileText,
     },
   };
 
-  const config = statusConfig[status];
+  // Fallback for unknown status values
+  const config = statusConfig[status] || {
+    label: "SCONOSCIUTO",
+    className: "bg-gray-100 text-gray-900 dark:bg-gray-900/30 dark:text-gray-300 border-gray-300 dark:border-gray-700",
+    icon: AlertCircle,
+  };
+  
   const Icon = config.icon;
 
   return (

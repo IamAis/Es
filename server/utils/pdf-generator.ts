@@ -191,13 +191,19 @@ export async function generateInvoicePDF(invoiceData: any): Promise<Buffer> {
             yPos = 50;
           }
 
+          // Hide values if total is 0.00
+          const shouldHideValues = item.total === 0;
+          const vatDisplay = shouldHideValues ? '' : `${item.vat}%`;
+          const discountDisplay = shouldHideValues ? '' : (item.discount ? `${item.discount}%` : '-');
+          const totalDisplay = shouldHideValues ? '' : formatCurrency(item.total);
+
           doc.fontSize(9)
              .fillColor(darkGray)
              .text(item.description, 50, yPos, { width: 280 })
              .text(item.quantity.toFixed(2), 350, yPos)
              .text(formatCurrency(item.unitPrice), 400, yPos, { width: 50 })
-             .text(`${item.vat}%`, 460, yPos)
-             .text(formatCurrency(item.total), 500, yPos);
+             .text(vatDisplay, 460, yPos)
+             .text(totalDisplay, 500, yPos);
 
           yPos += 30;
         }
